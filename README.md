@@ -30,44 +30,47 @@ mvnw test
 
 This will run all JUnit and Rest-Assured tests and show the results in the terminal.
 
-## Packaging and running the application
+## Pruebas CURL para la API
 
-The application can be packaged using:
-
-```shell script
-./mvnw package
+### Crear un producto
+```sh
+curl -X POST -H "Content-Type: application/json" -d '{"nombre":"Lapiz","precio":10}' http://localhost:8080/productos
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+### Listar todos los productos
+```sh
+curl http://localhost:8080/productos
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
+### Obtener un producto por ID (ejemplo con id=1)
+```sh
+curl http://localhost:8080/productos/1
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+### Eliminar un producto por ID (ejemplo con id=1)
+```sh
+curl -X DELETE http://localhost:8080/productos/1
 ```
 
-You can then execute your native executable with: `./target/prueba-backend-1.0-SNAPSHOT-runner`
+## Dependencias EXTRA para validación
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+Para habilitar la validación de datos en los endpoints REST y el manejo automático de errores de Bean Validation, se agregaron las siguientes dependencias en el `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>jakarta.validation</groupId>
+    <artifactId>jakarta.validation-api</artifactId>
+    <version>3.0.2</version>
+</dependency>
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-hibernate-validator</artifactId>
+</dependency>
+```
+
+- `jakarta.validation-api`: Provee las anotaciones estándar de Bean Validation (`@NotBlank`, `@Min`, etc.).
+- `quarkus-hibernate-validator`: Integra Hibernate Validator con Quarkus para validar automáticamente los datos recibidos en los endpoints y activar el manejo de errores con `ExceptionMapper`.
+- 
 # zenware-prueba-backend
 
 ## 3. Logs (15 pts) 
@@ -108,24 +111,3 @@ LIMIT 5;
 
 Un `INDEX(nombre)` acelera búsquedas cuando se realizan consultas filtrando o ordenando por el campo `nombre`, ya que permite localizar los registros más rápido sin escanear toda la tabla.
 
-## 6. Pruebas CURL para la API
-
-### Crear un producto
-```sh
-curl -X POST -H "Content-Type: application/json" -d '{"nombre":"Lapiz","precio":10}' http://localhost:8080/productos
-```
-
-### Listar todos los productos
-```sh
-curl http://localhost:8080/productos
-```
-
-### Obtener un producto por ID (ejemplo con id=1)
-```sh
-curl http://localhost:8080/productos/1
-```
-
-### Eliminar un producto por ID (ejemplo con id=1)
-```sh
-curl -X DELETE http://localhost:8080/productos/1
-```
